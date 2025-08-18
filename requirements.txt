@@ -1,0 +1,5 @@
+requests
+llama-cpp-python
+qdrant-client
+sqlite-utils
+sentence-transformers
