@@ -10,7 +10,7 @@ from services.qdrant_wrapper import QdrantWrapper
 from services.sqlite_wrapper import SqliteWrapper
 from services.embedder import Embedder
 
-wikidata_api= os.getenv("WIKIDATA_API")
+WIKIDATA_API= os.getenv("WIKIDATA_API")
 
 class DataFetcher:
 
@@ -37,7 +37,7 @@ class DataFetcher:
                 "props": "labels",
                 "format": "json",
             }
-            resp= requests.get(wikidata_api, params=params)
+            resp= requests.get(WIKIDATA_API, params=params)
             entities = resp.json().get("entities", {})
 
             for wid in batch:
@@ -57,7 +57,7 @@ class DataFetcher:
             "props": "labels|descriptions|aliases|sitelinks|claims",
             "format": "json",
         }
-        resp = requests.get(wikidata_api, params=params)
+        resp = requests.get(WIKIDATA_API, params=params)
         data = resp.json()
         entities_json: Dict[str, Any] = data.get("entities", {})
 
@@ -155,7 +155,7 @@ class DataFetcher:
         return entities
         
     def search_for_qid(self, entity: str, limit= 3):
-        url= wikidata_api
+        url= WIKIDATA_API
         params= {
             "action": "wbsearchentities",
             "search": entity,

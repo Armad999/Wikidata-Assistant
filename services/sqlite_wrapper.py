@@ -1,4 +1,5 @@
 import json
+import os
 from typing import List, Optional
 import sqlite_utils
 from sqlite_utils.db import NotFoundError
@@ -6,9 +7,11 @@ from sqlite_utils.db import NotFoundError
 from objects.entity import Entity
 from objects.fact import Fact
 
+SQLITE_CACHE= os.getenv("SQLITE_CACHE")
+
 class SqliteWrapper:
 
-    def __init__(self, path: str= "wikidata_cache.sqlite"):
+    def __init__(self, path: str= SQLITE_CACHE):
         self.db= sqlite_utils.Database(path)
 
         if "entities" not in self.db.table_names():

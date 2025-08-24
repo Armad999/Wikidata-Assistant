@@ -1,11 +1,14 @@
+import os
 from llama_cpp import Llama
 
 from data.data_fetcher import DataFetcher
 from services.qdrant_wrapper import QdrantWrapper
 from services.sqlite_wrapper import SqliteWrapper
 
+RAG_MODEL= os.getenv("RAG_MODEL")
+
 class LlamaModel:
-    def __init__(self, fetcher : DataFetcher, sqlite : SqliteWrapper, qdrant : QdrantWrapper, path = "TinyLlama-1.1B-rag-finetuned-v1.0.gguf"):
+    def __init__(self, fetcher : DataFetcher, sqlite : SqliteWrapper, qdrant : QdrantWrapper, path= RAG_MODEL):
         self.fetcher = fetcher
         self.sqlite = sqlite
         self.qdrant = qdrant

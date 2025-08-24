@@ -1,3 +1,4 @@
+import os
 from typing import List
 import uuid
 from qdrant_client import QdrantClient
@@ -7,8 +8,8 @@ from objects.entity import Entity
 from services.embedder import Embedder
 from services.sqlite_wrapper import SqliteWrapper
 
-DEFAULT_COLLECTION= "wikidata_vectors"
-DEFAULT_EMBED_SIZE= 384
+QDRANT_COLLECTION= os.getenv("QDRANT_COLLECTION")
+QDRANT_EMBED_SIZE= os.getenv("QDRANT_EMBED_SIZE")
 
 class QdrantWrapper:
 
@@ -18,7 +19,7 @@ class QdrantWrapper:
         self.client= QdrantClient(host, port= port)
         self.ensure_collection()
 
-    def ensure_collection(self, collection: str= DEFAULT_COLLECTION, size: int= DEFAULT_EMBED_SIZE) -> None:
+    def ensure_collection(self, collection: str= QDRANT_COLLECTION, size: int= QDRANT_EMBED_SIZE) -> None:
         if not self.client.collection_exists(collection):
             self.client.create_collection(
                 collection,
@@ -28,7 +29,7 @@ class QdrantWrapper:
     def point_id_from_qid(self, qid: str) -> str:
         return str(uuid.uuid5(uuid.NAMESPACE_URL, f"wikidata:{qid}"))
 
-    def upsert_entity(self, entity: Entity, collection: str= DEFAULT_COLLECTION) -> None:
+    def upsert_entity(self, entity: Entity, collection: str= QDRANT_COLLECTION) -> None:
         point_id = self.point_id_from_qid(entity.qid)
         text= entity.vector_ready_str()
         vector= self.embedder.embed_text(text)
@@ -43,11 +44,11 @@ class QdrantWrapper:
         )
         self.client.upsert(collection_name=collection, points=[point])
 
-    def delete_entity(self, qid: str, collection: str= DEFAULT_COLLECTION) -> None:
+    def delete_entity(self, qid: str, collection: str= QDRANT_COLLECTION) -> None:
         point_id = self.point_id_from_qid(qid)
         self.client.delete(collection_name= collection, points_selector= [point_id])
 
-    def search_entities(self, prompt: str, min_score: float= 0.80, limit: int= 3, collection: str= DEFAULT_COLLECTION) -> List[Entity]:
+    def search_entities(self, prompt: str, min_score: float= 0.80, limit: int= 3, collection: str= QDRANT_COLLECTION) -> List[Entity]:
         vector= self.embedder.embed_text(prompt)
         hits= self.client.search(collection_name= collection, query_vector= vector, limit= limit)
         entities: List[Entity]= []
