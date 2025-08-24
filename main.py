@@ -1,3 +1,4 @@
+from dotenv import load_dotenv
 from data.data_fetcher import DataFetcher
 from llm.llama_model import LlamaModel
 from services.embedder import Embedder
@@ -6,6 +7,7 @@ from services.sqlite_wrapper import SqliteWrapper
 
 
 def main():
+    load_dotenv()
     embedder= Embedder()
     sqlite= SqliteWrapper()
     qdrant= QdrantWrapper(embedder= embedder, sqlite= sqlite)
